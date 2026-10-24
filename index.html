@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>赵旭 — AI Native</title>
+<meta name="description" content="赵旭 — AI Native。独立开发的 AI 系统、评估体系与智能体落地。">
+<meta name="theme-color" content="#0a192f">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a192f'/><text x='50' y='50' font-size='52' font-family='system-ui' fill='%2364ffda' text-anchor='middle' dominant-baseline='central'>AI</text></svg>">
+<style>
+:root{
+  --navy:#0a192f; --light-navy:#112240; --lightest-navy:#233554;
+  --slate:#8892b0; --light-slate:#a8b2d1; --lightest-slate:#ccd6f6; --white:#e6f1ff;
+  --green:#64ffda; --green-dim:rgba(100,255,218,.12);
+  --mono:"SF Mono","JetBrains Mono","Fira Code","Roboto Mono",Consolas,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --shadow:0 10px 30px -15px rgba(2,12,27,.7);
+  --ease:cubic-bezier(.645,.045,.355,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:40px}
+body{
+  margin:0;background:var(--navy);color:var(--slate);
+  font-family:var(--sans);font-size:16px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--green-dim);color:var(--green)}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--navy)}
+::-webkit-scrollbar-thumb{background:var(--lightest-navy);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:var(--slate)}
+
+/* ---------- progress ---------- */
+#bar{position:fixed;top:0;left:0;height:2px;width:0;background:var(--green);z-index:100;transition:width .1s linear}
+
+/* ---------- layout ---------- */
+.layout{display:flex;gap:0;max-width:1400px;margin:0 auto;padding:0 48px;min-height:100vh}
+
+/* ---------- sidebar ---------- */
+.sidebar{
+  width:44%;flex-shrink:0;padding:110px 60px 60px 0;
+}
+.sidebar-inner{position:sticky;top:110px}
+.sidebar h1{
+  font-size:clamp(38px,4.4vw,52px);font-weight:700;letter-spacing:.02em;
+  color:var(--lightest-slate);margin:0 0 10px;line-height:1.15;
+}
+.sidebar .role{
+  font-size:clamp(18px,2vw,22px);font-weight:600;color:var(--lightest-slate);margin:0 0 4px;
+}
+.sidebar .role em{font-style:normal;color:var(--green)}
+.sidebar .tagline{margin:14px 0 0;max-width:340px;font-size:15px;line-height:1.7;color:var(--slate)}
+.nav{list-style:none;padding:0;margin:58px 0 0;display:flex;flex-direction:column;gap:6px}
+.nav a{
+  display:flex;align-items:center;gap:12px;width:max-content;
+  font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--slate);padding:8px 0;transition:color .25s var(--ease);
+}
+.nav a .no{color:var(--green);font-size:11px;opacity:.85}
+.nav a .line{width:0;height:1px;background:var(--green);transition:width .25s var(--ease)}
+.nav a:hover{color:var(--lightest-slate)}
+.nav a:hover .line{width:36px}
+.sidebar-foot{margin-top:60px;display:flex;gap:20px;align-items:center}
+.sidebar-foot a{color:var(--slate);transition:color .2s,transform .2s}
+.sidebar-foot a:hover{color:var(--green);transform:translateY(-2px)}
+.sidebar-foot svg{width:19px;height:19px;fill:currentColor}
+.sidebar-foot svg.outline{fill:none;stroke:currentColor;stroke-width:1.8}
+
+/* ---------- main ---------- */
+main{width:56%;padding:110px 0 120px}
+section{scroll-margin-top:40px;margin-bottom:110px}
+section h2{
+  display:flex;align-items:center;gap:16px;
+  font-size:clamp(22px,2.6vw,28px);font-weight:700;color:var(--lightest-slate);
+  margin:0 0 34px;letter-spacing:.01em;white-space:nowrap;
+}
+section h2 .no{font-family:var(--mono);font-size:16px;font-weight:400;color:var(--green)}
+section h2::after{content:"";flex:1;height:1px;background:var(--lightest-navy);margin-left:4px}
+
+/* ---------- hero ---------- */
+#hero{padding-top:0}
+#hero .hi{font-family:var(--mono);color:var(--green);font-size:15px;margin:0 0 16px;letter-spacing:.04em}
+#hero h1{font-size:clamp(40px,5.4vw,64px);line-height:1.12;color:var(--lightest-slate);margin:0 0 12px;font-weight:700}
+#hero h1 span{color:var(--slate)}
+#hero p.lede{max-width:560px;font-size:17px;color:var(--slate);margin:22px 0 0}
+#hero p.lede strong{color:var(--light-slate);font-weight:600}
+.hero-actions{margin-top:38px;display:flex;gap:14px;flex-wrap:wrap}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:13px;letter-spacing:.04em;
+  color:var(--green);border:1px solid var(--green);border-radius:4px;
+  padding:13px 22px;background:transparent;cursor:pointer;
+  transition:background .25s var(--ease),transform .25s var(--ease);
+}
+.btn:hover{background:var(--green-dim);transform:translateY(-2px)}
+.btn.ghost{color:var(--light-slate);border-color:var(--lightest-navy)}
+.btn.ghost:hover{color:var(--green);border-color:var(--green);background:var(--green-dim)}
+.btn .caret{width:12px;height:12px;transition:transform .25s var(--ease)}
+.btn[aria-expanded="true"] .caret{transform:rotate(180deg)}
+
+/* ---------- mail menu ---------- */
+.mailwrap{position:relative;display:inline-block}
+.mailmenu{
+  position:absolute;bottom:calc(100% + 12px);left:50%;
+  transform:translateX(-50%) translateY(8px);
+  min-width:216px;padding:7px;
+  background:var(--light-navy);border:1px solid var(--lightest-navy);border-radius:8px;
+  box-shadow:var(--shadow);z-index:60;text-align:left;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .22s var(--ease),transform .22s var(--ease),visibility .22s;
+}
+.mailmenu.open{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.mailmenu::after{
+  content:"";position:absolute;top:100%;left:50%;margin-left:-6px;
+  border:6px solid transparent;border-top-color:var(--lightest-navy);
+}
+.menu-label{
+  display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  color:var(--slate);padding:6px 12px 8px;border-bottom:1px solid var(--lightest-navy);
+  margin-bottom:5px;
+}
+.mailmenu a{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:5px;
+  font-size:13.5px;color:var(--light-slate);
+  transition:background .18s var(--ease),color .18s var(--ease);
+}
+.mailmenu a:hover,.mailmenu a:focus-visible{background:var(--green-dim);color:var(--green);outline:none}
+.dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.55;flex-shrink:0}
+.copy-mail{
+  width:100%;margin-top:5px;padding:9px 12px;
+  background:none;border:0;border-top:1px solid var(--lightest-navy);cursor:pointer;
+  font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--slate);
+  text-align:left;transition:color .18s var(--ease);
+}
+.copy-mail:hover{color:var(--green)}
+
+/* ---------- about ---------- */
+.about p{margin:0 0 16px;max-width:620px}
+.about p strong{color:var(--light-slate);font-weight:600}
+.edu{
+  margin-top:32px;padding:22px 26px;border-radius:6px;
+  background:var(--light-navy);border-left:2px solid var(--green);
+}
+.edu .row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.edu .school{color:var(--lightest-slate);font-weight:700;font-size:17px}
+.edu .date{font-family:var(--mono);font-size:12px;color:var(--slate)}
+.edu .major{color:var(--light-slate);font-size:14px;margin-top:2px}
+.edu ul{list-style:none;padding:0;margin:12px 0 0;font-size:14px;color:var(--slate)}
+.edu li{position:relative;padding-left:18px;margin-bottom:4px}
+.edu li::before{content:"▹";position:absolute;left:0;color:var(--green);font-size:12px;top:2px}
+
+/* ---------- experience tabs ---------- */
+.exp{display:flex;gap:0;min-height:340px}
+.tabs{
+  display:flex;flex-direction:column;flex-shrink:0;width:170px;
+  border-left:2px solid var(--lightest-navy);
+}
+.tab{
+  text-align:left;background:none;border:0;cursor:pointer;
+  font-family:var(--mono);font-size:13px;color:var(--slate);
+  padding:10px 16px;margin-left:-2px;border-left:2px solid transparent;
+  transition:all .2s var(--ease);line-height:1.5;
+}
+.tab:hover{background:var(--light-navy);color:var(--green)}
+.tab[aria-selected="true"]{color:var(--green);border-left-color:var(--green);background:var(--light-navy)}
+.panes{flex:1;padding-left:34px;min-width:0}
+.pane{display:none;animation:fade .35s var(--ease)}
+.pane.active{display:block}
+.pane h3{margin:0;font-size:19px;color:var(--lightest-slate);font-weight:600;line-height:1.4}
+.pane h3 em{font-style:normal;color:var(--light-slate)}
+.pane .date{font-family:var(--mono);font-size:12px;color:var(--slate);margin:6px 0 22px}
+.pane ul{list-style:none;padding:0;margin:0;font-size:15px}
+.pane li{position:relative;padding-left:26px;margin-bottom:14px;color:var(--slate)}
+.pane li::before{content:"▹";position:absolute;left:0;top:0;color:var(--green)}
+.pane li b{color:var(--light-slate);font-weight:600}
+.tech{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:24px 0 0}
+.tech li{
+  font-family:var(--mono);font-size:11.5px;color:var(--green);
+  background:var(--green-dim);border-radius:20px;padding:4px 12px;
+}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- projects ---------- */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card{
+  display:flex;flex-direction:column;position:relative;
+  background:var(--light-navy);border-radius:6px;padding:26px 24px;
+  min-height:250px;transition:transform .25s var(--ease),box-shadow .25s var(--ease);
+}
+.card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card .ico{color:var(--green);width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.6}
+.card .out{color:var(--slate);transition:color .2s}
+.card:hover .out{color:var(--green)}
+.card .out svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.card h3{font-size:17px;margin:0 0 4px;color:var(--lightest-slate);font-weight:600}
+.card .meta{font-family:var(--mono);font-size:11px;color:var(--slate);margin-bottom:12px;letter-spacing:.04em}
+.card p{margin:0;font-size:14px;flex:1;color:var(--slate)}
+.card .tech{margin-top:18px}
+
+/* ---------- skills ---------- */
+.skillgroup{margin-bottom:30px}
+.skillgroup h3{
+  font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--lightest-slate);margin:0 0 12px;font-weight:500;
+}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{
+  font-size:13px;color:var(--light-slate);border:1px solid var(--lightest-navy);
+  border-radius:4px;padding:5px 12px;transition:all .2s var(--ease);cursor:default;
+}
+.chips span:hover{border-color:var(--green);color:var(--green);background:var(--green-dim);transform:translateY(-2px)}
+
+/* ---------- contact ---------- */
+#contact{text-align:center;max-width:560px;margin-left:auto;margin-right:auto}
+#contact .kicker{font-family:var(--mono);color:var(--green);font-size:14px;margin:0 0 16px}
+#contact h2{justify-content:center;font-size:clamp(26px,3.4vw,36px);margin-bottom:20px}
+#contact h2::after{display:none}
+#contact p{margin:0 0 34px;font-size:16px}
+#contact .hero-actions{justify-content:center}
+
+/* ---------- footer ---------- */
+footer{
+  font-family:var(--mono);font-size:11.5px;color:var(--slate);
+  display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;
+  padding-bottom:40px;line-height:1.8;
+}
+footer a:hover{color:var(--green)}
+
+/* ---------- reveal ---------- */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- mobile ---------- */
+.mobile-head{display:none}
+.drawer{display:none}
+@media(max-width:1023px){
+  .layout{flex-direction:column;padding:0 28px}
+  .sidebar{display:none}
+  main{width:100%;padding:0 0 80px}
+  .mobile-head{
+    display:flex;align-items:center;justify-content:space-between;
+    position:fixed;top:0;left:0;right:0;z-index:90;height:64px;padding:0 24px;
+    background:rgba(10,25,47,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--lightest-navy);
+  }
+  .mobile-head .brand{font-weight:700;color:var(--lightest-slate);letter-spacing:.04em}
+  .burger{background:none;border:0;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px}
+  .burger span{display:block;width:22px;height:2px;background:var(--green);transition:.3s var(--ease)}
+  .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .burger.open span:nth-child(2){opacity:0}
+  .burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .drawer{
+    position:fixed;inset:0;z-index:80;background:var(--light-navy);
+    display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;
+    opacity:0;pointer-events:none;transition:opacity .3s var(--ease);
+  }
+  .drawer.open{opacity:1;pointer-events:auto}
+  .drawer a{
+    font-family:var(--mono);font-size:15px;letter-spacing:.1em;color:var(--lightest-slate);
+    display:flex;gap:12px;padding:14px;
+  }
+  .drawer a .no{color:var(--green);font-size:13px}
+  main{padding-top:120px}
+  section{margin-bottom:80px}
+  .exp{flex-direction:column;min-height:0}
+  .tabs{flex-direction:row;width:100%;overflow-x:auto;border-left:0;border-bottom:2px solid var(--lightest-navy);margin-bottom:26px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .tab{border-left:0;border-bottom:2px solid transparent;margin-left:0;margin-bottom:-2px;white-space:nowrap;padding:10px 14px}
+  .tab[aria-selected="true"]{border-bottom-color:var(--green);border-left:0;background:none}
+  .panes{padding-left:0}
+  .grid{grid-template-columns:1fr}
+  .card{min-height:0}
+}
+@media(max-width:520px){
+  .layout{padding:0 18px}
+  #hero h1{font-size:36px}
+  section h2{font-size:20px}
+}
+
+/* ---------- print ---------- */
+@media print{
+  #bar,.mobile-head,.drawer,.sidebar,.hero-actions{display:none!important}
+  body{background:#fff;color:#222;font-size:11.5pt}
+  .layout{display:block;padding:0;max-width:none}
+  main{width:100%;padding:0}
+  section{margin-bottom:22px;page-break-inside:avoid}
+  .pane{display:block!important;page-break-inside:avoid}
+  .panes{padding-left:0}
+  .tabs{display:none}
+  .pane h3{font-size:12pt}
+  .pane .date{color:#666}
+  .pane li{color:#222;margin-bottom:6px}
+  .pane li::before{content:"·";color:#666}
+  section h2{color:#111;font-size:14pt;border-bottom:1px solid #ccc;padding-bottom:6px}
+  section h2::after{display:none}
+  section h2 .no{color:#666}
+  .card{background:#f7f7f7;border:1px solid #e5e5e5;box-shadow:none;min-height:0;page-break-inside:avoid}
+  .card h3{color:#111}.card p{color:#333}
+  .edu{background:#f7f7f7;border-left:2px solid #999}
+  .chips span{border-color:#ccc;color:#333}
+  .tech li{background:#eee;color:#333}
+  footer{color:#888;padding-bottom:0}
+  a{color:#111}
+  #contact .hero-actions{display:none}
+}
+
+/* ---------- ai-native extras ---------- */
+.stats{display:flex;gap:52px;margin-top:44px;flex-wrap:wrap}
+.stats div{display:flex;flex-direction:column;gap:2px}
+.stats b{font-family:var(--mono);font-size:30px;line-height:1.1;color:var(--lightest-slate);font-weight:600}
+.stats span{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--slate)}
+.stats b em{font-style:normal;color:var(--green);font-size:18px}
+
+.repolist{list-style:none;padding:0;margin:18px 0 0}
+.repolist li{padding:15px 0;border-bottom:1px solid var(--lightest-navy);transition:padding-left .2s var(--ease)}
+.repolist li:last-child{border-bottom:0}
+.repolist li:hover{padding-left:6px}
+.repolist .rn{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--lightest-slate);display:flex;align-items:center;gap:10px}
+.repolist .rn:hover{color:var(--green)}
+.repolist .rn .arw{opacity:0;transition:opacity .2s var(--ease);font-size:12px;color:var(--green)}
+.repolist li:hover .rn .arw{opacity:1}
+.repolist .rd{font-size:14px;margin-top:3px;color:var(--slate);max-width:600px}
+.repolist .rd b{color:var(--light-slate);font-weight:600}
+
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;position:relative;padding-left:40px;margin-bottom:18px;font-size:15px}
+.steps li::before{
+  content:counter(s,decimal-leading-zero);position:absolute;left:0;top:2px;
+  font-family:var(--mono);font-size:12px;color:var(--green);
+  border:1px solid var(--lightest-navy);border-radius:4px;padding:1px 6px;
+}
+.steps li b{color:var(--light-slate);font-weight:600}
+
+.caseblock{
+  margin-top:26px;padding:24px 26px;border-radius:6px;
+  background:var(--light-navy);border-left:2px solid var(--green);
+}
+.caseblock .role{color:var(--lightest-slate);font-weight:600;font-size:16px}
+.caseblock .date{font-family:var(--mono);font-size:12px;color:var(--slate);margin:4px 0 14px}
+.caseblock ul{list-style:none;padding:0;margin:0;font-size:14.5px}
+.caseblock li{position:relative;padding-left:24px;margin-bottom:10px;color:var(--slate)}
+.caseblock li::before{content:"▹";position:absolute;left:0;top:0;color:var(--green)}
+
+@media(max-width:1023px){ .stats{gap:32px} }
+@media(max-width:520px){ .stats b{font-size:24px} }
+@media print{
+  .stats{margin-top:14px}.stats b{font-size:14pt;color:#111}.stats span{color:#666}
+  .repolist li{border-color:#e5e5e5}.repolist .rn{color:#111}.caseblock{background:#f7f7f7;border-left-color:#999}
+  .steps li::before{color:#666;border-color:#ccc}
+}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+
+<header class="mobile-head">
+  <span class="brand">赵旭 · AI Native</span>
+  <button class="burger" id="burger" aria-label="菜单" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+<nav class="drawer" id="drawer" aria-label="移动端导航">
+  <a href="#about"><span class="no">01.</span>关于</a>
+  <a href="#systems"><span class="no">02.</span>系统</a>
+  <a href="#field"><span class="no">03.</span>落地</a>
+  <a href="#daily"><span class="no">04.</span>日常</a>
+  <a href="#contact"><span class="no">05.</span>联系</a>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+      <h1>赵旭</h1>
+      <p class="role">AI <em>Native</em></p>
+      <p class="tagline">独立开发的 AI 系统 · 评估体系 · 智能体落地。用自然语言把想法写成能上线的系统。</p>
+
+      <ul class="nav">
+        <li><a href="#about"><span class="line"></span><span class="no">01.</span>关于</a></li>
+        <li><a href="#systems"><span class="line"></span><span class="no">02.</span>系统</a></li>
+        <li><a href="#field"><span class="line"></span><span class="no">03.</span>落地</a></li>
+        <li><a href="#daily"><span class="line"></span><span class="no">04.</span>日常</a></li>
+        <li><a href="#contact"><span class="line"></span><span class="no">05.</span>联系</a></li>
+      </ul>
+
+      <div class="sidebar-foot">
+        <a href="https://github.com/z15346183030" aria-label="GitHub" title="github.com/z15346183030">
+          <svg viewBox="0 0 24 24"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.6 1.2 3.3.9.1-.7.4-1.2.7-1.5-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2.9-.3 1.9-.4 2.9-.4s2 .1 2.9.4c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+        </a>
+        <a href="mailto:2210914541@qq.com" aria-label="邮箱" title="2210914541@qq.com">
+          <svg class="outline" viewBox="0 0 24 24"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M3 6l9 7 9-7"/></svg>
+        </a>
+        <a href="tel:15346183030" aria-label="电话" title="153 4618 3030">
+          <svg class="outline" viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.2.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1l-2.3 2.2z"/></svg>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <section id="hero" class="reveal">
+      <p class="hi">AI NATIVE</p>
+      <h1>赵旭<span>。</span></h1>
+      <p class="lede">
+        我不把 AI 当助手，我把它当<strong>生产资料</strong>。
+        从 2024 年的第一个项目到现在，十几套系统都是我把想法直接说给 AI，
+        然后拿到一个能跑、能被度量、能上线的东西。
+      </p>
+      <div class="stats">
+        <div><b>14</b><span>开源项目</span></div>
+        <div><b>7</b><span>AI 系统</span></div>
+        <div><b>2024<em>—</em></b><span>持续构建</span></div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn" href="#systems">看系统</a>
+        <a class="btn ghost" href="https://github.com/z15346183030" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </section>
+
+    <section id="about" class="reveal">
+      <h2><span class="no">01.</span>关于</h2>
+      <div class="about">
+        <p>
+          我是 <strong>AI native</strong> 的一代。不是先系统学编程再用 AI，
+          而是从第一天起就用自然语言驱动 AI 去写、去调、去测、去部署。
+        </p>
+        <p>
+          但我很快发现，<strong>能跑</strong>不等于<strong>能用</strong>。一个 AI 系统能不能上线，
+          取决于你能不能度量它——所以我给自己搭评估框架、定义指标、做 badcase 归因、跑 A/B 回测，
+          把「感觉变好了」变成「数字变好了」。
+        </p>
+        <p>
+          我也把 AI 带进过真实的业务链路：在集团自研智能体平台上搭业务智能体、接入自研插件，
+          让它在总额超千万元的真实项目里跑通。
+        </p>
+        <p>
+          我的信条是：<strong>AI 的能力边界不由模型决定，而由你能不能问对问题、能不能验证答案决定。</strong>
+        </p>
+
+        <div class="skillgroup" style="margin-top:38px">
+          <h3>我的能力面</h3>
+          <div class="chips">
+            <span>多 Agent 编排</span><span>Prompt 工程</span><span>Workflow 编排</span>
+            <span>LLM-as-a-Judge</span><span>评估体系设计</span><span>ICC 一致性检验</span>
+            <span>badcase 归因</span><span>A/B 回测</span><span>智能体（Agent）搭建</span>
+            <span>插件集成</span><span>RAG</span><span>Transformer / RLHF 理解</span>
+            <span>Python / FastAPI</span><span>vibe coding</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="systems" class="reveal">
+      <h2><span class="no">02.</span>系统</h2>
+      <div class="grid">
+        <a class="card" href="https://github.com/z15346183030/multi-agent-code-studio" target="_blank" rel="noopener">
+          <div class="top">
+            <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7M17.5 14v7"/></svg>
+            <span class="out"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+          </div>
+          <h3>Multi-Agent Code Studio</h3>
+          <p class="meta">2025.03 — 至今 · 独立开发 · Python</p>
+          <p>把代码生成拆成四个专业角色：Orchestrator 调度，Writer 写、Reviewer 审、Tester 验、Refiner 改，模拟真实软件团队的协作。内置 LLM-as-a-Judge 五维评分与质量门控——测试通过率低于阈值自动触发优化。</p>
+          <ul class="tech"><li>多 Agent 协作</li><li>质量门控</li><li>MVP 上线</li></ul>
+        </a>
+
+        <a class="card" href="https://github.com/z15346183030/llm-as-judge" target="_blank" rel="noopener">
+          <div class="top">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M5 16h14"/><circle cx="12" cy="12" r="9"/></svg>
+            <span class="out"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+          </div>
+          <h3>LLM-as-a-Judge</h3>
+          <p class="meta">2025 · 独立开发 · Python</p>
+          <p>用多个 LLM 充当评委，从正确性、可读性、效率、健壮性、代码风格五个维度给 AI 生成的代码打分。多评委加权平均压低单模型偏见，ICC 一致性检验量化评委间的分歧，参考答案做评分校准。</p>
+          <ul class="tech"><li>评估框架</li><li>ICC 一致性</li><li>评分校准</li></ul>
+        </a>
+
+        <a class="card" href="https://github.com/z15346183030/code-eval-platform" target="_blank" rel="noopener">
+          <div class="top">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+            <span class="out"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+          </div>
+          <h3>Code Eval Platform</h3>
+          <p class="meta">2025 · 独立开发 · FastAPI</p>
+          <p>完整的 AI 模型代码能力评测台：上传题目、配置多模型、自动评测、实时排行榜、Markdown 报告导出。把「哪个模型写代码更强」从感觉变成可复现的实验。</p>
+          <ul class="tech"><li>多模型对比</li><li>自动评分</li><li>评测报告</li></ul>
+        </a>
+
+        <a class="card" href="https://github.com/z15346183030/prompt-playground" target="_blank" rel="noopener">
+          <div class="top">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M9 18l-5-6 5-6M15 6l5 6-5 6"/></svg>
+            <span class="out"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+          </div>
+          <h3>Prompt Playground</h3>
+          <p class="meta">2025 · 独立开发 · 纯前端</p>
+          <p>零后端的 Prompt 测试工作台，直连 OpenAI 兼容 API。实时对比不同 Prompt 的输出，Temperature / Max Tokens 随手调，测试历史自动留存，Ctrl+Enter 直接发。</p>
+          <ul class="tech"><li>Prompt 工程</li><li>零后端</li><li>实时对比</li></ul>
+        </a>
+
+        <a class="card" href="https://github.com/z15346183030/geo-optimizer" target="_blank" rel="noopener">
+          <div class="top">
+            <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/><path d="M11 7v8M7 11h8"/></svg>
+            <span class="out"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+          </div>
+          <h3>GEO Optimizer</h3>
+          <p class="meta">2026.06 — 至今 · 独立开发 · FastAPI</p>
+          <p>针对 AI 搜索引擎的内容优化工具。6 维度加权模型评估「你的内容被 AI 引用的概率」并输出可执行建议——SEO 争的是排名，GEO 争的是被引用。</p>
+          <ul class="tech"><li>GEO</li><li>6 维加权模型</li><li>内容工程</li></ul>
+        </a>
+
+        <a class="card" href="https://github.com/z15346183030/ecommerce-agent" target="_blank" rel="noopener">
+          <div class="top">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18l-2 12H5L3 6z"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 6L2 3"/></svg>
+            <span class="out"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+          </div>
+          <h3>跨境电商自动筛货上架 Agent</h3>
+          <p class="meta">2025.02 — 2025.03 · 独立开发 · Python</p>
+          <p>四个 Agent 串起一条完整业务流：采集 Agent 抓商品，筛选 Agent 按利润 / 竞争 / 品质 / 趋势 / 供应链 / 合规六维打分，内容 Agent 生成 SEO 标题与多平台文案，上架 Agent 走模拟上架与合规检查。</p>
+          <ul class="tech"><li>4 Agent 协作</li><li>六维评分</li><li>AIGC 生产</li></ul>
+        </a>
+
+        <a class="card" href="https://github.com/z15346183030/gaokao-helper" target="_blank" rel="noopener">
+          <div class="top">
+            <svg class="ico" viewBox="0 0 24 24"><path d="M12 3L2.5 8 12 13l9.5-5L12 3z"/><path d="M6 10.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-5.5"/></svg>
+            <span class="out"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+          </div>
+          <h3>高考择校助手</h3>
+          <p class="meta">2024.06 — 至今 · 产品负责人 / 独立开发 · FastAPI</p>
+          <p>我的第一个 AI 产品：对话式分析高校宿舍、交通等校园生活信息，帮考生和家长做志愿参考。Claude / OpenAI 兼容接入，SQLite 存储，服务 200+ 用户，获省级创新创业立项。</p>
+          <ul class="tech"><li>Claude API</li><li>FastAPI</li><li>200+ 用户</li></ul>
+        </a>
+      </div>
+    </section>
+
+    <section id="field" class="reveal">
+      <h2><span class="no">03.</span>落地</h2>
+      <p style="max-width:620px;margin:0">
+        一个人在自己电脑上跑通 AI 不算什么，能在一条真实的、有交付压力、有金额的业务链路里跑通才算。
+      </p>
+
+      <div class="caseblock">
+        <div class="role">AI 应用方向 · 海信集团</div>
+        <div class="date">2026.06 — 至今</div>
+        <ul>
+          <li>识别业务效率瓶颈，推动大客户销售 AI 工作平台、AI 物流自追踪、AI 排产规划三套场景的智能化落地。</li>
+          <li>依托集团自研智能体平台搭建业务智能体，通过接入自研插件实现完整功能闭环。</li>
+          <li>在总额超千万元的真实项目里，把一线痛点翻译成 AI 能解的场景需求。</li>
+        </ul>
+      </div>
+
+      <h3 style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--lightest-slate);margin:44px 0 18px;font-weight:500">我怎么让 AI 可靠</h3>
+      <ol class="steps">
+        <li><b>先定义什么算好。</b>指标、评测集、评分维度——没有标准，优化就是碰运气。</li>
+        <li><b>让 AI 当裁判。</b>多个模型独立打分，加权平均，压掉单模型的偏见。</li>
+        <li><b>检验裁判本身可不可靠。</b>ICC 一致性检验量化评委分歧，参考答案校准评分尺度。</li>
+        <li><b>用不合格的样本反向驱动。</b>badcase 归因 → 优化策略 → A/B 验证 → 回测，形成闭环。</li>
+      </ol>
+    </section>
+
+    <section id="daily" class="reveal">
+      <h2><span class="no">04.</span>日常</h2>
+
+      <div class="skillgroup">
+        <h3>每天都在做的事</h3>
+        <ul class="repolist">
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/daily-forge" target="_blank" rel="noopener">daily-forge <span class="arw">↗</span></a>
+            <div class="rd">每天拆解一个 GitHub 千星项目，然后<strong>用自己写的代码做一个更小的版本</strong>——不 fork、不镜像、不换皮。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/reverse-lab" target="_blank" rel="noopener">reverse-lab <span class="arw">↗</span></a>
+            <div class="rd">每日逆向拆解高星项目：架构研报 + 源码解析 + 最小复刻。</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="skillgroup" style="margin-top:40px">
+        <h3>写给自己用的工具</h3>
+        <ul class="repolist">
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/squeeze" target="_blank" rel="noopener">squeeze <span class="arw">↗</span></a>
+            <div class="rd">把 JSON 和日志压到进上下文窗口之前。<strong>体积 -60% ~ -87%</strong>，但有一条规则不可配置：<strong>错误行永远不丢</strong>。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/depmap" target="_blank" rel="noopener">depmap <span class="arw">↗</span></a>
+            <div class="rd">Python 模块依赖图，标出循环依赖与死代码。只用标准库 <code style="font-family:var(--mono);font-size:.9em;color:var(--light-slate)">ast</code>，零依赖单文件。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/doc2md" target="_blank" rel="noopener">doc2md <span class="arw">↗</span></a>
+            <div class="rd">零依赖 Office → Markdown，40 KB 单文件，不联网不装包。为那些装不了任何东西的机器写的。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/awesome-agentic-commerce" target="_blank" rel="noopener">awesome-agentic-commerce <span class="arw">↗</span></a>
+            <div class="rd">Agentic commerce 资源集：UCP、ACP、AP2、MCP 等协议的整理与导读。</div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="contact" class="reveal">
+      <h2><span class="no">05.</span>联系</h2>
+      <p class="kicker">OPEN TO BUILD</p>
+      <p>如果你在找能把 AI 真正落到业务里的人，欢迎聊聊。我做的最好的事，是把一个模糊的想法变成一个能跑、能被度量的系统。</p>
+      <div class="hero-actions">
+        <div class="mailwrap">
+          <button class="btn" id="mailBtn" aria-haspopup="true" aria-expanded="false" aria-controls="mailMenu">
+            发邮件给我
+            <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="mailmenu" id="mailMenu" role="menu" aria-labelledby="mailBtn">
+            <span class="menu-label">用哪个邮箱发给我</span>
+            <a role="menuitem" target="_blank" rel="noopener" href="https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=2210914541@qq.com"><span class="dot"></span>QQ 邮箱</a>
+            <a role="menuitem" target="_blank" rel="noopener" href="https://mail.163.com/js6/main.jsp?df=mail163_letter#module=compose.ComposeModule%7C%7C%7C%7B%22id%22%3A%22new%22%2C%22action%22%3A%22new%22%2C%22to%22%3A%222210914541%40qq.com%22%7D"><span class="dot"></span>网易 163 邮箱</a>
+            <a role="menuitem" target="_blank" rel="noopener" href="https://mail.126.com/js6/main.jsp?df=mail163_letter#module=compose.ComposeModule%7C%7C%7C%7B%22id%22%3A%22new%22%2C%22action%22%3A%22new%22%2C%22to%22%3A%222210914541%40qq.com%22%7D"><span class="dot"></span>网易 126 邮箱</a>
+            <a role="menuitem" target="_blank" rel="noopener" href="https://mail.google.com/mail/?view=cm&fs=1&to=2210914541@qq.com"><span class="dot"></span>Gmail</a>
+            <a role="menuitem" target="_blank" rel="noopener" href="https://outlook.live.com/mail/0/deeplink/compose?to=2210914541@qq.com"><span class="dot"></span>Outlook</a>
+            <a role="menuitem" href="mailto:2210914541@qq.com"><span class="dot"></span>系统默认邮箱</a>
+            <button type="button" class="copy-mail" id="copyMail" data-mail="2210914541@qq.com">复制邮箱地址</button>
+          </div>
+        </div>
+        <a class="btn ghost" href="https://github.com/z15346183030" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </section>
+
+    <footer>
+      <span>赵旭 · AI Native</span>
+      <span>版式参考 Brittany Chiang 的 <a href="https://github.com/bchiang7/v4" target="_blank" rel="noopener">v4</a>（MIT）</span>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  // 顶部进度条
+  var bar = document.getElementById('bar');
+  function onScroll(){
+    var h = document.documentElement;
+    var p = h.scrollTop / (h.scrollHeight - h.clientHeight || 1);
+    bar.style.width = (p * 100) + '%';
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // 滚动揭示
+  var items = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold: 0.08, rootMargin: '0px 0px -40px 0px'});
+    items.forEach(function(el){ io.observe(el); });
+  } else {
+    items.forEach(function(el){ el.classList.add('in'); });
+  }
+  // 首屏立即显示
+  requestAnimationFrame(function(){
+    var hero = document.getElementById('hero');
+    if (hero) hero.classList.add('in');
+  });
+
+  // 经历 tabs（本站无此模块）
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var panes = Array.prototype.slice.call(document.querySelectorAll('.pane'));
+  function activate(tab){
+    tabs.forEach(function(t){ t.setAttribute('aria-selected', String(t === tab)); });
+    panes.forEach(function(p){ p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')); });
+  }
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){ activate(tab); });
+  });
+  // 键盘左右切换
+  var tabsEl = document.querySelector('.tabs');
+  if (tabsEl) tabsEl.addEventListener('keydown', function(e){
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    var i = tabs.indexOf(document.activeElement);
+    if (i < 0) return;
+    e.preventDefault();
+    var next = tabs[(i + (e.key === 'ArrowDown' ? 1 : tabs.length - 1)) % tabs.length];
+    next.focus(); activate(next);
+  });
+
+  // 移动端抽屉
+  var burger = document.getElementById('burger');
+  var drawer = document.getElementById('drawer');
+  function closeDrawer(){
+    burger.classList.remove('open');
+    drawer.classList.remove('open');
+    burger.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+  }
+  burger.addEventListener('click', function(){
+    var open = drawer.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  drawer.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeDrawer); });
+
+  // 发邮件菜单
+  var mailBtn = document.getElementById('mailBtn');
+  var mailMenu = document.getElementById('mailMenu');
+  var copyBtn = document.getElementById('copyMail');
+  function setMail(open){
+    mailMenu.classList.toggle('open', open);
+    mailBtn.setAttribute('aria-expanded', String(open));
+  }
+  mailBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    setMail(!mailMenu.classList.contains('open'));
+  });
+  document.addEventListener('click', function(e){
+    if (!mailMenu.classList.contains('open')) return;
+    if (!mailMenu.contains(e.target) && e.target !== mailBtn) setMail(false);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && mailMenu.classList.contains('open')) { setMail(false); mailBtn.focus(); }
+  });
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function(){
+      var text = copyBtn.getAttribute('data-mail');
+      var done = function(){ copyBtn.textContent = '已复制 ' + text; };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done, function(){});
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(err) {}
+        document.body.removeChild(ta);
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
