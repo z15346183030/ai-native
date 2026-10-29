@@ -344,6 +344,11 @@ footer a:hover{color:var(--green)}
 .repolist li:hover .rn .arw{opacity:1}
 .repolist .rd{font-size:14px;margin-top:3px;color:var(--slate);max-width:600px}
 .repolist .rd b{color:var(--light-slate);font-weight:600}
+.toollead{font-size:14.5px;color:var(--slate);line-height:1.8;margin:12px 0 0;max-width:620px}
+.toollead strong{color:var(--lightest-slate);font-weight:600}
+.grp{display:flex;align-items:baseline;gap:9px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:26px 0 0;padding-bottom:9px;border-bottom:1px solid var(--lightest-navy)}
+.grp em{font-style:normal;color:var(--green)}
+.grp i{flex:1;height:1px;background:var(--lightest-navy);font-style:normal;margin-left:4px}
 
 .steps{counter-reset:s;list-style:none;padding:0;margin:0}
 .steps li{counter-increment:s;position:relative;padding-left:40px;margin-bottom:18px;font-size:15px}
@@ -598,18 +603,89 @@ footer a:hover{color:var(--green)}
 
       <div class="skillgroup" style="margin-top:40px">
         <h3>写给自己用的工具</h3>
+        <p class="toollead">15 个单文件工具，约 <strong>21,700 行 Python</strong>（1.35 万行工具代码 + 0.81 万行测试），只用标准库，复制走就能跑。共同点不是技术选择，是同一个判断：<strong>它们都要在那台「装不了包」的机器上工作</strong>。</p>
+
+        <div class="grp">读懂代码 <em>04</em><i></i></div>
         <ul class="repolist">
-          <li>
-            <a class="rn" href="https://github.com/z15346183030/squeeze" target="_blank" rel="noopener">squeeze <span class="arw">↗</span></a>
-            <div class="rd">把 JSON 和日志压到进上下文窗口之前。<strong>体积 -60% ~ -87%</strong>，但有一条规则不可配置：<strong>错误行永远不丢</strong>。</div>
-          </li>
           <li>
             <a class="rn" href="https://github.com/z15346183030/depmap" target="_blank" rel="noopener">depmap <span class="arw">↗</span></a>
             <div class="rd">Python 模块依赖图，标出循环依赖与死代码。只用标准库 <code style="font-family:var(--mono);font-size:.9em;color:var(--light-slate)">ast</code>，零依赖单文件。</div>
           </li>
           <li>
+            <a class="rn" href="https://github.com/z15346183030/astdiff" target="_blank" rel="noopener">astdiff <span class="arw">↗</span></a>
+            <div class="rd">按语法树比对。函数挪位置不算改动，长表达式折行自动折叠，<strong>缩进层级变了会单独标出来</strong>——Python 里缩进就是语法。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/shapefind" target="_blank" rel="noopener">shapefind <span class="arw">↗</span></a>
+            <div class="rd">按形状搜索代码。写 <code style="font-family:var(--mono);font-size:.9em;color:var(--light-slate)">print($X)</code> 找调用点，不会命中 <code style="font-family:var(--mono);font-size:.9em;color:var(--light-slate)">pprint</code>，也不会命中注释里的 print。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/copyfind" target="_blank" rel="noopener">copyfind <span class="arw">↗</span></a>
+            <div class="rd">重复代码按<strong>克隆类</strong>分组：12 处重复只报 1 条并列出全部位置，而不是 11 条两两配对让你自己拼。</div>
+          </li>
+        </ul>
+
+        <div class="grp">文档与发布 <em>03</em><i></i></div>
+        <ul class="repolist">
+          <li>
             <a class="rn" href="https://github.com/z15346183030/doc2md" target="_blank" rel="noopener">doc2md <span class="arw">↗</span></a>
             <div class="rd">零依赖 Office → Markdown，40 KB 单文件，不联网不装包。为那些装不了任何东西的机器写的。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/mddeck" target="_blank" rel="noopener">mddeck <span class="arw">↗</span></a>
+            <div class="rd">Markdown 变幻灯片，<strong>不启浏览器</strong>。构建时就把每页排版量好，溢出直接报第几页、差多少像素，而不是投影到墙上才发现。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/commitlog" target="_blank" rel="noopener">commitlog <span class="arw">↗</span></a>
+            <div class="rd">git 历史变 CHANGELOG，顺带算出下一个版本号。Conventional Commits 已经规定了类型，<strong>不该再让你用正则描述一遍</strong>。</div>
+          </li>
+        </ul>
+
+        <div class="grp">数据与配置 <em>03</em><i></i></div>
+        <ul class="repolist">
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/csvsift" target="_blank" rel="noopener">csvsift <span class="arw">↗</span></a>
+            <div class="rd">一个命令完成选列、筛行、排序、截断、分组与统计。<strong>值永远原样</strong>：<code style="font-family:var(--mono);font-size:.9em;color:var(--light-slate)">012345</code> 是邮编，不是 12345。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/yamlsplice" target="_blank" rel="noopener">yamlsplice <span class="arw">↗</span></a>
+            <div class="rd">按路径改 YAML，只替换目标那几个字节。注释没被读进来所以不会丢，缩进没被重算所以不会变——<strong>改一个数字，diff 就只有一行</strong>。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/squeeze" target="_blank" rel="noopener">squeeze <span class="arw">↗</span></a>
+            <div class="rd">把 JSON 和日志压到进上下文窗口之前。<strong>体积 -60% ~ -87%</strong>，但有一条规则不可配置：<strong>错误行永远不丢</strong>。</div>
+          </li>
+        </ul>
+
+        <div class="grp">质量门禁 <em>05</em><i></i></div>
+        <ul class="repolist">
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/leakcheck" target="_blank" rel="noopener">leakcheck <span class="arw">↗</span></a>
+            <div class="rd">按形状、键名、上下文找硬编码密钥。每条命中都给出<strong>打分依据</strong>（形状 +0.55 · 熵 +0.25 · 长度 +0.10），不是一句「疑似」。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/linkcheck" target="_blank" rel="noopener">linkcheck <span class="arw">↗</span></a>
+            <div class="rd">只报真正坏掉的死链。代码块里的假链接、<code style="font-family:var(--mono);font-size:.9em;color:var(--light-slate)">mailto:</code>、被改名的锚点分开算，不让 CI 因为一条假报警变红。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/spellcode" target="_blank" rel="noopener">spellcode <span class="arw">↗</span></a>
+            <div class="rd">源码拼写检查。三层判断先滤掉哈希、版本号和缩写，<strong>漏掉冷僻错拼可以接受，误报不可接受</strong>。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/pngslim" target="_blank" rel="noopener">pngslim <span class="arw">↗</span></a>
+            <div class="rd">无损 PNG 瘦身。只重排滤波和 deflate，写回前<strong>把自己的结果解码回来逐行比对</strong>，所以不可能改坏像素。</div>
+          </li>
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/benchloop" target="_blank" rel="noopener">benchloop <span class="arw">↗</span></a>
+            <div class="rd">交错跑两条命令，用配对数据算加速比和 <strong>95% 置信区间</strong>。还会报进程创建的底噪——因为测出个错的数字比测不准更糟。</div>
+          </li>
+        </ul>
+
+        <div class="grp">长期在维护 <em>02</em><i></i></div>
+        <ul class="repolist">
+          <li>
+            <a class="rn" href="https://github.com/z15346183030/reverse-engineer-for-everything" target="_blank" rel="noopener">reverse-engineer-for-everything <span class="arw">↗</span></a>
+            <div class="rd">软件逆向工具箱：拆一个系统时，每一步都留下可复现的证据链，而不是一份「我觉得是这样」的结论。</div>
           </li>
           <li>
             <a class="rn" href="https://github.com/z15346183030/awesome-agentic-commerce" target="_blank" rel="noopener">awesome-agentic-commerce <span class="arw">↗</span></a>
